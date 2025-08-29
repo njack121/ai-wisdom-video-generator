@@ -293,8 +293,8 @@
             document.getElementById('promptInput').value = text;
         }
         
-        function generateVideo() {
-            const prompt = document.getElementById('promptInput').value.trim().toLowerCase();
+        async function generateVideo() {
+            const prompt = document.getElementById('promptInput').value.trim();
             
             if (!prompt) {
                 alert('Please enter a wisdom quote or concept!');
@@ -305,33 +305,94 @@
             document.getElementById('loading').style.display = 'block';
             document.querySelector('.generate-btn').disabled = true;
             
-            // Find matching concept
-            let matchedVideo = null;
-            for (const [key, video] of Object.entries(conceptMap)) {
-                if (prompt.includes(key)) {
-                    matchedVideo = video;
-                    break;
+            try {
+                // Call API to generate video
+                const response = await fetch('/api/generate-video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to generate video');
                 }
-            }
-            
-            // Default to a random video if no match
-            if (!matchedVideo) {
-                const videos = ['PlantingTreesWisdom', 'WaterDropStone', 'EmptyCupWisdom', 'BambooOakWisdom'];
-                matchedVideo = videos[Math.floor(Math.random() * videos.length)];
-            }
-            
-            // Simulate generation delay
-            setTimeout(() => {
+                
+                const result = await response.json();
+                
+                // Show the generated content
+                showGeneratedWisdom(result);
+                
+            } catch (error) {
+                console.error('Error generating video:', error);
+                
+                // Fallback to concept mapping for now
+                const prompt_lower = prompt.toLowerCase();
+                let matchedVideo = null;
+                for (const [key, video] of Object.entries(conceptMap)) {
+                    if (prompt_lower.includes(key)) {
+                        matchedVideo = video;
+                        break;
+                    }
+                }
+                
+                // Default to a random video if no match
+                if (!matchedVideo) {
+                    const videos = ['PlantingTreesWisdom', 'WaterDropStone', 'EmptyCupWisdom', 'BambooOakWisdom'];
+                    matchedVideo = videos[Math.floor(Math.random() * videos.length)];
+                }
+                
                 showVideo(matchedVideo);
-            }, 2000);
+            }
         }
         
+        function showGeneratedWisdom(result) {
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+            document.querySelector('.generate-btn').disabled = false;
+            
+            // Show generated wisdom content
+            const videoResult = document.getElementById('videoResult');
+            videoResult.innerHTML = `
+                <div style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 15px; color: white;">
+                    <h3 style="color: white; margin-bottom: 15px; font-size: 24px;">✨ Generated Wisdom Video</h3>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin-bottom: 10px; font-weight: 600;">Your Prompt:</p>
+                        <p style="font-style: italic; font-size: 18px;">"${result.prompt}"</p>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin-bottom: 10px; font-weight: 600;">Generated Wisdom Quote:</p>
+                        <p style="font-size: 20px; font-weight: 500; line-height: 1.4;">"${result.quote}"</p>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="margin-bottom: 10px; font-weight: 600;">Theme:</p>
+                        <p style="text-transform: capitalize; font-size: 18px;">${result.theme}</p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <p style="margin-bottom: 15px; opacity: 0.9;">🎬 Your unique wisdom video has been generated!</p>
+                        <p style="font-size: 14px; opacity: 0.8;">Video ID: ${result.videoId}</p>
+                    </div>
+                </div>
+                <button class="generate-btn" onclick="generateAnother()">
+                    Generate Another Video
+                </button>
+            `;
+            
+            document.getElementById('videoResult').style.display = 'block';
+            document.getElementById('videoResult').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function showVideo(videoName) {
             // Hide loading
             document.getElementById('loading').style.display = 'none';
             document.querySelector('.generate-btn').disabled = false;
             
-            // Show video with direct video player
+            // Show video with direct video player (fallback)
             const videoResult = document.getElementById('videoResult');
             videoResult.innerHTML = `
                 <div style="padding: 20px; background: #f8f9fa; border-radius: 12px; margin-bottom: 15px;">
