@@ -61,33 +61,33 @@ const generateWisdomQuote = (prompt) => {
 };
 
 module.exports = async function handler(req, res) {
-  // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const { prompt } = req.body;
-  
-  if (!prompt || prompt.trim().length === 0) {
-    return res.status(400).json({ error: 'Prompt is required' });
-  }
-
   try {
+    // Add CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // Simple test response first
+    const { prompt } = req.body || {};
+    
+    if (!prompt || prompt.trim().length === 0) {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
     // Generate wisdom content
-    const wisdom = generateWisdomQuote(prompt);
+    const wisdom = generateWisdomQuote(prompt.trim());
     const videoId = `wisdom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    // For now, return the wisdom data
-    // In a full implementation, you'd render the video here
-    res.status(200).json({
+    // Return the wisdom data
+    return res.status(200).json({
       videoId,
       prompt: prompt.trim(),
       theme: wisdom.theme,
@@ -97,7 +97,11 @@ module.exports = async function handler(req, res) {
     });
     
   } catch (error) {
-    console.error('Error generating video:', error);
-    res.status(500).json({ error: 'Failed to generate video' });
+    console.error('API Error:', error);
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message,
+      stack: error.stack
+    });
   }
 }
