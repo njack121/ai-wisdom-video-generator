@@ -6,6 +6,10 @@
       "dest": "/index.html"
     },
     {
+      "src": "/(.*\\.mp4)",
+      "dest": "/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/user-interface.html"
     }
