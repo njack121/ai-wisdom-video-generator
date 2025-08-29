@@ -6,11 +6,17 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@remotion/bundler": "^4.0.340",
     "@remotion/cli": "4.0.340",
+    "@remotion/renderer": "^4.0.340",
+    "@remotion/tailwind-v4": "4.0.340",
+    "animejs": "^4.1.3",
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "openai": "^5.16.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "remotion": "4.0.340",
-    "@remotion/tailwind-v4": "4.0.340",
     "tailwindcss": "4.0.0"
   },
   "devDependencies": {
@@ -19,13 +25,19 @@
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
     "prettier": "3.6.0",
+    "ts-node": "^10.9.2",
     "typescript": "5.8.2"
   },
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "generate": "ts-node src/VideoGenerator.ts",
+    "generate-unique": "ts-node src/SimpleGenerativeVideoGenerator.ts",
+    "generate-svg": "ts-node src/SVGBasedVideoGenerator.ts",
+    "generate-embedded": "ts-node src/EmbeddedSVGGenerator.ts",
+    "batch-generate": "ts-node src/BatchGenerator.ts"
   },
   "sideEffects": [
     "*.css"
