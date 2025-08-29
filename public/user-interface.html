@@ -258,6 +258,8 @@
             'timing': 'PlantingTreesWisdom',
             'procrastination': 'PlantingTreesWisdom',
             'now': 'PlantingTreesWisdom',
+            'hope': 'PlantingTreesWisdom',
+            'future': 'PlantingTreesWisdom',
             
             // Water drop stone
             'persistence': 'WaterDropStone',
@@ -278,7 +280,7 @@
             'give': 'EmptyCupWisdom',
             
             // Bamboo oak
-            'flexibility': 'BambooOakWisdomtelegramBot',
+            'flexibility': 'BambooOakWisdom',
             'flexible': 'BambooOakWisdom',
             'adapt': 'BambooOakWisdom',
             'bamboo': 'BambooOakWisdom',
@@ -330,9 +332,23 @@
             document.getElementById('loading').style.display = 'none';
             document.querySelector('.generate-btn').disabled = false;
             
-            // Show video
+            // Show video - open in new tab instead of iframe for now
             const videoFrame = document.getElementById('videoFrame');
-            videoFrame.src = `/studio?composition=${videoName}&autoPlay=true`;
+            
+            // Create a message showing which video was selected
+            const videoResult = document.getElementById('videoResult');
+            videoResult.innerHTML = `
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 12px; margin-bottom: 15px;">
+                    <h3 style="color: #333; margin-bottom: 10px;">✨ Generated: ${videoName}</h3>
+                    <p style="color: #666; margin-bottom: 15px;">Your wisdom video is ready!</p>
+                    <a href="/studio?composition=${videoName}" target="_blank" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; display: inline-block; font-weight: 600;">
+                        🎬 Watch Video in Studio
+                    </a>
+                </div>
+                <button class="generate-btn" onclick="generateAnother()">
+                    Generate Another Video
+                </button>
+            `;
             
             document.getElementById('videoResult').style.display = 'block';
             document.getElementById('videoResult').scrollIntoView({ behavior: 'smooth' });
