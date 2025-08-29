@@ -326,6 +326,7 @@
                 
             } catch (error) {
                 console.error('Error generating video:', error);
+                alert('AI generation failed, using fallback system. Error: ' + error.message);
                 
                 // Fallback to concept mapping for now
                 const prompt_lower = prompt.toLowerCase();

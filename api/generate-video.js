@@ -1,7 +1,4 @@
 // Vercel serverless function to generate wisdom videos
-const { spawn } = require('child_process');
-const fs = require('fs');
-const path = require('path');
 
 // Simple wisdom quote generator based on themes
 const generateWisdomQuote = (prompt) => {
@@ -63,7 +60,16 @@ const generateWisdomQuote = (prompt) => {
   };
 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  // Add CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
