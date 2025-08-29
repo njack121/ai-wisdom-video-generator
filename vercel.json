@@ -1,3 +1,13 @@
 {
-  "outputDirectory": "build"
+  "outputDirectory": "public",
+  "routes": [
+    {
+      "src": "/studio",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/user-interface.html"
+    }
+  ]
 }
