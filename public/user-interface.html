@@ -339,21 +339,40 @@
             document.getElementById('loading').style.display = 'none';
             document.querySelector('.generate-btn').disabled = false;
             
-            // Show generated video
+            // Show AI-generated wisdom with video
             const videoResult = document.getElementById('videoResult');
             videoResult.innerHTML = `
-                <div style="padding: 20px; background: #f8f9fa; border-radius: 12px; margin-bottom: 15px;">
-                    <h3 style="color: #333; margin-bottom: 15px;">✨ Generated Video: "${result.prompt}"</h3>
-                    <video controls autoplay loop muted style="width: 100%; max-width: 400px; border-radius: 12px; background: #000;">
-                        <source src="${result.videoUrl}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                    <p style="color: #666; margin-top: 10px; font-size: 14px;">
-                        This video was generated specifically for your prompt!
-                    </p>
+                <div style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 15px; color: white;">
+                    <h3 style="color: white; margin-bottom: 20px; font-size: 24px;">✨ AI-Generated Wisdom Video</h3>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin-bottom: 10px; font-weight: 600;">Your Prompt:</p>
+                        <p style="font-style: italic; font-size: 18px;">"${result.prompt}"</p>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="margin-bottom: 10px; font-weight: 600;">AI-Generated Wisdom:</p>
+                        <p style="font-size: 20px; font-weight: 500; line-height: 1.4;">"${result.wisdomQuote}"</p>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="margin-bottom: 10px; font-weight: 600;">Detected Theme:</p>
+                        <p style="text-transform: capitalize; font-size: 18px; color: #ffd700;">${result.theme}</p>
+                    </div>
+                    
+                    <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                        <p style="margin-bottom: 15px; font-weight: 600;">🎬 Generated Video with ${result.theme} Theme</p>
+                        <video controls autoplay loop muted style="width: 100%; max-width: 400px; border-radius: 12px; background: #000;">
+                            <source src="${result.videoUrl}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <p style="margin-top: 10px; font-size: 14px; opacity: 0.9;">
+                            This video represents your custom wisdom: "${result.wisdomQuote}"
+                        </p>
+                    </div>
                 </div>
                 <button class="generate-btn" onclick="generateAnother()">
-                    Generate Another Video
+                    Generate Another Wisdom Video
                 </button>
             `;
             
