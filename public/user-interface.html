@@ -293,8 +293,8 @@
             document.getElementById('promptInput').value = text;
         }
         
-        function generateVideo() {
-            const prompt = document.getElementById('promptInput').value.trim().toLowerCase();
+        async function generateVideo() {
+            const prompt = document.getElementById('promptInput').value.trim();
             
             if (!prompt) {
                 alert('Please enter a wisdom quote or concept!');
@@ -305,25 +305,60 @@
             document.getElementById('loading').style.display = 'block';
             document.querySelector('.generate-btn').disabled = true;
             
-            // Find matching concept
-            let matchedVideo = null;
-            for (const [key, video] of Object.entries(conceptMap)) {
-                if (prompt.includes(key)) {
-                    matchedVideo = video;
-                    break;
+            try {
+                // Call the actual video generation API
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to generate video');
                 }
+                
+                const result = await response.json();
+                
+                // Show the generated video
+                showGeneratedVideo(result);
+                
+            } catch (error) {
+                console.error('Error generating video:', error);
+                alert('Video generation failed. Please try again.');
+                
+                // Hide loading and re-enable button
+                document.getElementById('loading').style.display = 'none';
+                document.querySelector('.generate-btn').disabled = false;
             }
+        }
+        
+        function showGeneratedVideo(result) {
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+            document.querySelector('.generate-btn').disabled = false;
             
-            // Default to a random video if no match
-            if (!matchedVideo) {
-                const videos = ['PlantingTreesWisdom', 'WaterDropStone', 'EmptyCupWisdom', 'BambooOakWisdom'];
-                matchedVideo = videos[Math.floor(Math.random() * videos.length)];
-            }
+            // Show generated video
+            const videoResult = document.getElementById('videoResult');
+            videoResult.innerHTML = `
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 12px; margin-bottom: 15px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">✨ Generated Video: "${result.prompt}"</h3>
+                    <video controls autoplay loop muted style="width: 100%; max-width: 400px; border-radius: 12px; background: #000;">
+                        <source src="${result.videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p style="color: #666; margin-top: 10px; font-size: 14px;">
+                        This video was generated specifically for your prompt!
+                    </p>
+                </div>
+                <button class="generate-btn" onclick="generateAnother()">
+                    Generate Another Video
+                </button>
+            `;
             
-            // Simulate generation delay
-            setTimeout(() => {
-                showVideo(matchedVideo);
-            }, 2000);
+            document.getElementById('videoResult').style.display = 'block';
+            document.getElementById('videoResult').scrollIntoView({ behavior: 'smooth' });
         }
         
 
