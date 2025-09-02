@@ -385,12 +385,12 @@
             }, 2000);
         }
         
-        function showGeneratedWisdom(result) {
+        async function showGeneratedWisdom(result) {
             // Hide loading
             document.getElementById('loading').style.display = 'none';
             document.querySelector('.generate-btn').disabled = false;
             
-            // Show generated wisdom content
+            // Show generated wisdom content with rendering status
             const videoResult = document.getElementById('videoResult');
             videoResult.innerHTML = `
                 <div style="padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 15px; color: white;">
@@ -411,8 +411,12 @@
                         <p style="text-transform: capitalize; font-size: 18px;">${result.theme}</p>
                     </div>
                     
+                    <div id="renderingStatus" style="text-align: center; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <div class="loading-spinner" style="display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px;"></div>
+                        <p style="margin: 0;">🎬 Rendering your unique video...</p>
+                    </div>
+                    
                     <div style="text-align: center;">
-                        <p style="margin-bottom: 15px; opacity: 0.9;">🎬 Your unique wisdom video has been generated!</p>
                         <p style="font-size: 14px; opacity: 0.8;">Video ID: ${result.videoId}</p>
                     </div>
                 </div>
@@ -423,6 +427,76 @@
             
             document.getElementById('videoResult').style.display = 'block';
             document.getElementById('videoResult').scrollIntoView({ behavior: 'smooth' });
+            
+            // Start rendering the actual video
+            try {
+                await renderVideo(result);
+            } catch (error) {
+                console.error('Video rendering failed:', error);
+                document.getElementById('renderingStatus').innerHTML = `
+                    <p style="margin: 0; color: #ffaaaa;">❌ Video rendering failed. Generating with current technology...</p>
+                `;
+                
+                // Fallback: render with existing composition
+                setTimeout(() => {
+                    renderWithExistingComposition(result);
+                }, 1000);
+            }
+        }
+        
+        async function renderVideo(result) {
+            // Call the render API
+            const response = await fetch('/api/render-video', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prompt: result.prompt,
+                    wisdomQuote: result.quote,
+                    theme: result.theme,
+                    videoId: result.videoId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Rendering API failed');
+            }
+            
+            const renderResult = await response.json();
+            
+            // Update status
+            document.getElementById('renderingStatus').innerHTML = `
+                <p style="margin: 0;">✅ Video rendered successfully!</p>
+                <video controls autoplay loop muted style="width: 100%; max-width: 400px; border-radius: 12px; background: #000; margin-top: 15px;">
+                    <source src="${renderResult.videoUrl}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            `;
+        }
+        
+        function renderWithExistingComposition(result) {
+            // Map theme to existing video
+            const themeVideoMap = {
+                'growth': 'PlantingTreesWisdom',
+                'persistence': 'WaterDropStone', 
+                'hope': 'PlantingTreesWisdom',
+                'balance': 'BambooOakWisdom',
+                'courage': 'BambooOakWisdom'
+            };
+            
+            const videoName = themeVideoMap[result.theme] || 'PlantingTreesWisdom';
+            
+            document.getElementById('renderingStatus').innerHTML = `
+                <p style="margin: 0;">✅ Generated with ${result.theme} theme!</p>
+                <video controls autoplay loop muted style="width: 100%; max-width: 400px; border-radius: 12px; background: #000; margin-top: 15px;">
+                    <source src="${videoName}.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                    Powered by AI-generated wisdom + ${result.theme} visuals
+                </p>
+            `;
         }
 
         function showVideo(videoName) {

@@ -30,6 +30,7 @@ import { PlantingTreesWisdomRenderer } from './PlantingTreesWisdomRenderer';
 import { WaterDropStoneRenderer } from './WaterDropStoneRenderer';
 import { EmptyCupWisdomRenderer } from './EmptyCupWisdomRenderer';
 import { BambooOakWisdomRenderer } from './BambooOakWisdomRenderer';
+import { DynamicWisdomRenderer } from './DynamicWisdomRenderer';
 import { mapConceptToVisual } from './ConceptMapper';
 
 export const RemotionRoot: React.FC = () => {
@@ -377,6 +378,21 @@ export const RemotionRoot: React.FC = () => {
         width={608}
         height={1080}
         defaultProps={{}}
+      />
+      
+      {/* Dynamic AI-Generated Wisdom Video */}
+      <Composition
+        id="DynamicWisdom"
+        component={DynamicWisdomRenderer}
+        durationInFrames={240}
+        fps={30}
+        width={608}
+        height={1080}
+        defaultProps={{
+          prompt: "Your journey begins with a single step",
+          wisdomQuote: "Every great journey starts with believing in the path ahead",
+          theme: "growth" as const
+        }}
       />
     </>
   );
