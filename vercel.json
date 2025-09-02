@@ -1,17 +1,14 @@
 {
-  "outputDirectory": "public",
+  "builds": [
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
   "routes": [
     {
-      "src": "/studio",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/(.*\\.mp4)",
-      "dest": "/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/user-interface.html"
+      "dest": "/public/$1"
     }
   ]
 }
